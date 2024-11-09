@@ -1,0 +1,81 @@
+﻿@page "/quote"
+@using BlazorStock.Server.Entities.Models
+@using BlazorStock_Server.Models;
+@using BlazorStock_Server.Service;
+@using Microsoft.AspNetCore.Mvc;
+@using System.Net.Http;
+@using System.Diagnostics.CodeAnalysis
+@using Service.IService
+@using static BlazorStock_Server.Models.TwelveDataQuote;
+@inject HttpClient Http
+@inject IQuoteService QuoteService
+
+
+<PageTitle>Quote</PageTitle>
+
+<h1>Quote</h1>
+
+
+<label for="symbol">Enter Symbol:</label>
+<input type="text" class="form-control" id="symbol" @bind-value="Symbol" />
+
+<button class="btn btn-primary" @onclick="GetQuote">Get Quote</button>
+
+@if (string.IsNullOrEmpty(ErrorMessage) && CurrentQuote != null)
+{
+    <ul>
+        <li>Company Name: @CurrentQuote.name</li>
+        <li>Price: @string.Format("{0:C}", CurrentQuote.close)</li>
+    </ul>
+}
+else if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <br/>
+    <span style="color:darkred; font-weight:bold; font-size:15pt;">@ErrorMessage</span>
+}
+
+
+
+@code {
+    private string Symbol { get; set; } = "";
+    //private StockQuote CurrentQuote { get; set; } = new();
+    private string ErrorMessage { get; set; } = "";
+    public RootObject CurrentQuote { get; set; } = new();
+
+
+
+
+    private async Task GetQuote()
+    {
+        //ErrorMessage = string.Empty;
+
+        
+
+        if (Symbol.Length > 0)
+        {
+
+            //using var httpClient = new HttpClient();
+            //CurrentQuote = await httpClient.GetFromJsonAsync<StockQuote>($"https://cloud.iexapis.com/stable/stock/{Symbol}/quote?token=pk_5ee8e10181b146b686d2fcaaf1e3a7d9");
+
+            CurrentQuote = await QuoteService.GetQuote(Symbol);
+        }
+
+        else
+        {
+            ErrorMessage = "Please enter a symbol.";
+            
+            
+        }
+
+      //CurrentQuote = await Http.GetFromJsonAsync<StockQuote>($"StockQuote/{Symbol}");
+      //if (!string.IsNullOrWhiteSpace(CurrentQuote.ErrorMessage))
+      //   ErrorMessage = CurrentQuote.ErrorMessage;
+   }
+
+    
+
+   //https://cloud.iexapis.com/stable/stock/msft/quote?token=pk_5ee8e10181b146b686d2fcaaf1e3a7d9
+
+   //https://cloud.iexapis.com/
+
+   }

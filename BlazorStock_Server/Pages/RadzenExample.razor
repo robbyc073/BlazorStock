@@ -1,0 +1,27 @@
+﻿@page "/radzen"
+@using BlazorStock.Server.Entities.Models
+@inject IStockTransactionRepository _tSRepository
+
+<h3>Example of Radzen DataGrid</h3>
+
+<RadzenButton Text="@text" class="rz-ripple"></RadzenButton>
+<br />
+<br />
+
+<RadzenDataGrid Data="@transactions" TItem="StockTransactionDTO" AllowSorting="true" AllowPaging="true" PageSize="5" AllowGrouping="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="StockTransactionDTO" Property="UserId" Title="User ID"  />
+        <RadzenDataGridColumn TItem="StockTransactionDTO" Property="Symbol" Title="Symbol" />
+        <RadzenDataGridColumn TItem="StockTransactionDTO" Property="Quantity" Title="Qty" />
+        <RadzenDataGridColumn TItem="StockTransactionDTO" Property="Total" Title="Total" />
+    </Columns>
+</RadzenDataGrid>
+@code {
+  string text = "Hi";
+  IEnumerable<StockTransactionDTO> transactions;
+
+    protected override async Task OnInitializedAsync() => transactions = _tSRepository.GetAll();
+}
+
+
+

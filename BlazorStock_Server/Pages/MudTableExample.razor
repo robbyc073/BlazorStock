@@ -1,0 +1,157 @@
+﻿@page "/mud"
+@using BlazorStock.Server.Entities.Models
+@inject IStockTransactionRepository _tSRepository
+@inject ISnackbar Snackbar
+
+<h3>Example of MudBlazor Table With Inline Edit</h3>
+
+
+<MudTable Items="@transactions" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit" Filter="new Func<StockTransactionDTO,bool>(FilterFunc)"
+          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch" ApplyButtonPosition="@applyButtonPosition">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Your Transaction History</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+		@if(applyButtonPosition.DisplayApplyButtonAtStart())
+		{
+			<col style="width:50px;" />
+		}
+		<col style="width:50px;" />
+        <col style="width:80px;" />
+        <col style="width:50%;" />
+        <col />
+        <col />
+		@if (applyButtonPosition.DisplayApplyButtonAtEnd())
+		{
+			<col style="width:50px;" />
+		}
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<StockTransactionDTO, object>(x=>x.TransactionId)">Id</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StockTransactionDTO, object>(x=>x.Symbol)">Symbol</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<StockTransactionDTO, object>(x=>x.Total)">Total</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StockTransactionDTO, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<StockTransactionDTO, object>(x=>x.Quantity)">Quantity</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.TransactionId</MudTd>
+        <MudTd DataLabel="Symbol">@context.Symbol</MudTd>
+        <MudTd DataLabel="Total">@context.Total</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+        <MudTd DataLabel="Quantity mass">@context.Quantity</MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Nr">@context.TransactionId</MudTd>
+        <MudTd DataLabel="Symbol">
+            <MudTextField @bind-Value="@context.Symbol" Required />
+        </MudTd>
+        <MudTd DataLabel="Total">
+            <MudTextField @bind-Value="@context.Total" Required />
+        </MudTd>
+        <MudTd DataLabel="Price">
+            <MudNumericField @bind-Value="@context.Price" Required Min="1" />
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            <MudTextField @bind-Value="@context.Quantity" Required />
+        </MudTd>
+    </RowEditingTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudSwitch @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
+<MudSwitch @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
+<MudSwitch @bind-Checked="@ronly" Color="Color.Tertiary">Read Only</MudSwitch>
+<MudSwitch @bind-Checked="@canCancelEdit" Color="Color.Info">Can Cancel Edit</MudSwitch>
+<MudSwitch @bind-Checked="@blockSwitch" Color="Color.Success">Block Edit Row Switching</MudSwitch>
+<MudSelect Label="Apply Button Postion" T="TableApplyButtonPosition" @bind-Value="applyButtonPosition">
+	<MudSelectItem Value="TableApplyButtonPosition.Start">Start</MudSelectItem>
+	<MudSelectItem Value="TableApplyButtonPosition.End">End</MudSelectItem>
+	<MudSelectItem Value="TableApplyButtonPosition.StartAndEnd">Start and End</MudSelectItem>
+</MudSelect>
+<MudText Inline="true">Selected1: @selectedItem1?.Total</MudText>
+
+<MudExpansionPanels Style="flex: 1;">
+    <MudExpansionPanel Text="Show inline-edit event log">
+        @foreach (var message in editEvents)
+        {
+<MudText>@message</MudText>}
+        @if (editEvents.Count > 0)
+        {
+<div class="d-flex">
+    <MudSpacer />
+    <MudButton Class="mt-3" MudBlazor.ButtonType="ButtonType.Button" MudBlazor.Variant="Variant.Filled" OnClick="ClearEventLog">Clear event log</MudButton>
+</div>}
+    </MudExpansionPanel>
+</MudExpansionPanels>
+@code {
+	private List<string> editEvents = new();
+	private bool dense = false;
+	private bool hover = true;
+	private bool ronly = false;
+	private bool canCancelEdit = false;
+	private bool blockSwitch = false;
+	private string searchString = "";
+	private StockTransactionDTO selectedItem1 = null;
+	private StockTransactionDTO elementBeforeEdit;
+	private HashSet<StockTransactionDTO> selectedItems1 = new HashSet<StockTransactionDTO>();
+	private TableApplyButtonPosition applyButtonPosition = TableApplyButtonPosition.End;
+	private IEnumerable<StockTransactionDTO> transactions = new List<StockTransactionDTO>();
+
+    protected override async Task OnInitializedAsync() => transactions = _tSRepository.GetAll();
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            Symbol = ((StockTransactionDTO)element).Symbol,
+            Total = ((StockTransactionDTO)element).Total,
+            Quantity = ((StockTransactionDTO)element).Quantity,
+            Price = ((StockTransactionDTO)element).Price
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of StockTransactionDTO {((StockTransactionDTO)element).Total}");
+    }
+
+    private void ItemHasBeenCommitted(object element)
+    {
+        AddEditionEvent($"RowEditCommit event: Changes to StockTransactionDTO {((StockTransactionDTO)element).Total} committed");
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((StockTransactionDTO)element).Symbol = elementBeforeEdit.Symbol;
+        ((StockTransactionDTO)element).Total = elementBeforeEdit.Total;
+        ((StockTransactionDTO)element).Quantity = elementBeforeEdit.Quantity;
+        ((StockTransactionDTO)element).Price = elementBeforeEdit.Price;
+        AddEditionEvent($"RowEditCancel event: Editing of StockTransactionDTO {((StockTransactionDTO)element).Total} cancelled");
+    }
+
+    private bool FilterFunc(StockTransactionDTO element)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Symbol.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Symbol.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Symbol} {element.Price} {element.Quantity}".Contains(searchString))
+            return true;
+        return false;
+    } 
+}

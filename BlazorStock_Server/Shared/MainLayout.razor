@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Stock Trader</PageTitle>
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <BlazorStock_Server.Pages.Shared.LoginDisplay></BlazorStock_Server.Pages.Shared.LoginDisplay>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>

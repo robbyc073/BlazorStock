@@ -1,0 +1,43 @@
+﻿@page "/users"
+@inject HttpClient Http;
+
+
+<PageTitle>Users</PageTitle>
+<greetingcomponent name="users" />
+
+<table class="table">
+    <tr>
+        <th>user id</th>
+        <th>user name</th>
+        <th>user email</th>
+        <th>password hash</th>
+        <th>full name</th>
+    </tr>
+    @*@if (users != null)
+    {
+
+
+        @foreach (var user in users)
+        {
+            
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.UserName</td>
+                <td>@user.UserEmail</td>
+                <td>***</td>
+                <td>@user.FullName</td>
+            </tr>
+           
+        }*@
+    }
+</table>
+
+@code {
+    //private StockUsersClass[]? users;
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    users = await Http.GetFromJsonAsync<StockUsersClass[]>("StockQuote/users");
+    //}
+
+}

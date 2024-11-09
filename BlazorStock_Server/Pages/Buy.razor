@@ -1,0 +1,90 @@
+﻿@page "/buy"
+@using BlazorStock.Server.Entities.Models
+@using System.Diagnostics.CodeAnalysis
+@using BlazorStock_Server.Models;
+@using Service.IService
+@inject IStockTransactionRepository _sTRepository
+@inject NavigationManager _navigationManager
+@inject IQuoteService QuoteService
+
+<PageTitle>Buy</PageTitle>
+
+<h1>Buy Stock</h1>
+
+<div class="form-group col-10">
+
+<EditForm Model="transaction" OnValidSubmit="@GetQuote">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary/>
+    <label for="Symbol">Stock Symbol</label>
+    <InputText class="form-control" id="Symbol" @bind-Value="transaction.Symbol" placeholder="Enter Symbol">Symbol</InputText>
+
+    <label for="Quantity">Quantity</label>
+    <InputNumber class="form-control" id="Quantity" @bind-Value="transaction.Quantity" placeholder="Enter Quantity">Quantity</InputNumber>
+
+    <label for="Price">Stock Price</label>
+    <InputNumber class="form-control" id="Price" @bind-Value="transaction.Price" placeholder="Enter Price">Stock Price</InputNumber>
+
+    <button class="btn btn-primary m-2" type="submit">Get Price</button> 
+    <br />
+    <br />
+
+
+        @if (quoted)
+        {
+            <p>Current stock price for @CurrentQuote.name is $@transaction.Price</p>
+            <p>Total Cost of Transaction for @transaction.Quantity shares wil be: $@transaction.Total</p>
+
+            <button class="btn btn-success" type="submit" @onclick="BuyStock">Buy</button> 
+            <button class="btn btn-danger" type="submit" @onclick="GoToBuy">Cancel</button> 
+
+        }
+
+</EditForm>
+</div>
+
+@code {
+    [AllowNull]
+    public StockTransactionDTO transaction = new();
+    private bool quoted { get; set; } = false;
+    private string ErrorMessage { get; set; } = "";
+    [AllowNull]
+    private RootObject CurrentQuote { get; set; } = new();
+
+    private async Task GetQuote()
+    {
+        ErrorMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(transaction.Symbol))
+        {
+            ErrorMessage = "Please enter a symbol.";
+            return;
+        }
+        else
+        {
+            //using var httpClient = new HttpClient();
+            //CurrentQuote = await httpClient.GetFromJsonAsync<StockQuote>($"https://cloud.iexapis.com/stable/stock/{transaction.Symbol}/quote?token=pk_5ee8e10181b146b686d2fcaaf1e3a7d9");
+            CurrentQuote = await QuoteService.GetQuote(transaction.Symbol);
+            transaction.Price = Convert.ToDouble(CurrentQuote.close);
+            transaction.Total = transaction.Quantity * transaction.Price;
+            quoted = true;
+        }
+
+    }
+
+    private void BuyStock()
+    {
+        transaction.TransactionType = "Buy";
+        transaction.UserId = 2;
+
+        transaction.Symbol = transaction.Symbol.ToUpper();
+        _sTRepository.Create(transaction);
+        _navigationManager.NavigateTo("history");
+    }
+
+    private void GoToBuy()
+    {
+        _navigationManager.NavigateTo("buy", forceLoad: true);
+       
+    }
+}
