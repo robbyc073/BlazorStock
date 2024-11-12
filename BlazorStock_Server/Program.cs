@@ -7,7 +7,6 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Identity;
 using BlazorStock_Server.Service;
 using BlazorStock_Server.Service.IService;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(System.Configuration.ConfigurationManager.AppSettings["ConnectionString"],
+    options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionString"),
     options => options.EnableRetryOnFailure());
 });
     

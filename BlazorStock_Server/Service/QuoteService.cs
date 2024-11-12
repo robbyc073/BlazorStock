@@ -32,8 +32,8 @@ namespace BlazorStock_Server.Service
         //Commented out to use App Service Env Variables instead
         //{ "X-RapidAPI-Key", _configuration["BlazorStockVariables:x-rapid-api-key"] },
         //{ "X-RapidAPI-Host", _configuration["BlazorStockVariables:x-rapid-api-host"] },
-        { "X-RapidAPI-Key", System.Configuration.ConfigurationManager.AppSettings["x-rapid-api-key"] },
-        { "X-RapidAPI-Host", System.Configuration.ConfigurationManager.AppSettings["x -rapid-api-host"] },
+        { "X-RapidAPI-Key", Environment.GetEnvironmentVariable("x-rapid-api-key") },
+        { "X-RapidAPI-Host", Environment.GetEnvironmentVariable("x-rapid-api-host") },
     },
                 };
                 Debug.WriteLine("Point one reached");
