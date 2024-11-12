@@ -32,8 +32,8 @@
 
         @if (quoted)
         {
-            <p>Current stock price for @CurrentQuote.name is $@transaction.Price</p>
-            <p>Total Cost of Transaction for @transaction.Quantity shares wil be: $@transaction.Total</p>
+            <p class="font-1-5">Current stock price for @CurrentQuote.name is $@transaction.Price</p>
+            <p class="font-1-5">Total Cost of Transaction for @transaction.Quantity shares wil be: $@transaction.Total</p>
 
             <button class="btn btn-success" type="submit" @onclick="BuyStock">Buy</button> 
             <button class="btn btn-danger" type="submit" @onclick="GoToBuy">Cancel</button> 

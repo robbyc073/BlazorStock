@@ -23,9 +23,9 @@
 
 @if (string.IsNullOrEmpty(ErrorMessage) && CurrentQuote != null)
 {
-    <ul>
+    <ul id="quoteListing">
         <li>Company Name: @CurrentQuote.name</li>
-        <li>Price: @string.Format("{0:C}", CurrentQuote.close)</li>
+        <li>Price: $@string.Format("{0:C}", CurrentQuote.close)</li>
     </ul>
 }
 else if (!string.IsNullOrEmpty(ErrorMessage))
