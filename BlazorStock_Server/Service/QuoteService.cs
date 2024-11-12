@@ -28,8 +28,8 @@ namespace BlazorStock_Server.Service
                     RequestUri = new Uri($"https://twelve-data1.p.rapidapi.com/quote?symbol={symbol}&interval=5min&outputsize=30&format=json"),
                     Headers =
     {
-        { "X-RapidAPI-Key", _configuration.GetValue<string>("X-RapidAPI-Key")},
-        { "X-RapidAPI-Host", _configuration.GetValue<string>("X-RapidAPI-Host") },
+        { "X-RapidAPI-Key", _configuration["BlazorStockVariables:x-rapid-api-key"] },
+        { "X-RapidAPI-Host", _configuration["BlazorStockVariables:x-rapid-api-host"] },
     },
                 };
                 Debug.WriteLine("Point one reached");
@@ -44,6 +44,7 @@ namespace BlazorStock_Server.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                Debug.WriteLine("Exception begins here: " + ex.ToString());
                 return new RootObject();
             }
         }

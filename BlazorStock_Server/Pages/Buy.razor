@@ -75,7 +75,8 @@
     private void BuyStock()
     {
         transaction.TransactionType = "Buy";
-        transaction.UserId = 2;
+        //Temporary user assignment before implementing login feature
+        transaction.UserId = 3;
 
         transaction.Symbol = transaction.Symbol.ToUpper();
         _sTRepository.Create(transaction);

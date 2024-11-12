@@ -11,8 +11,13 @@ using BlazorStock_Server.Service;
 using BlazorStock_Server.Service.IService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var configuration = builder.Configuration;
+var connectionString = configuration["BlazorStockVariables:ConnectionString"];
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -20,7 +25,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(connectionString,
     options => options.EnableRetryOnFailure());
 });
     
