@@ -1,7 +1,7 @@
 ﻿/*address additional styles here*/
 
 #Symbol, #Quantity, #Price {
-    width: 100px;
-    margin: 1rem 0;
+    width: 150px;
+    margin: 0 0 1rem 0;
 }
 
