@@ -1,7 +1,5 @@
 using BlazorStock_DataAccess;
 using BlazorStock_Server.Data;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using BlazorStock.Server.Repository.IRepository;
 using BlazorStock.Server.Repository;
@@ -9,15 +7,14 @@ using MudBlazor.Services;
 using Microsoft.AspNetCore.Identity;
 using BlazorStock_Server.Service;
 using BlazorStock_Server.Service.IService;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var configuration = builder.Configuration;
-var connectionString = configuration["BlazorStockVariables:ConnectionString"];
+//Commented out to use App Service Env Variables instead
+//var configuration = builder.Configuration;
+//var connectionString = configuration["BlazorStockVariables:ConnectionString"];
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -25,7 +22,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer(connectionString,
+    options.UseSqlServer(System.Configuration.ConfigurationManager.AppSettings["ConnectionString"],
     options => options.EnableRetryOnFailure());
 });
     

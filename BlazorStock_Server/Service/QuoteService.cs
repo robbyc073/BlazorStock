@@ -2,6 +2,7 @@
 using BlazorStock_Server.Service.IService;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace BlazorStock_Server.Service
 {
@@ -28,8 +29,11 @@ namespace BlazorStock_Server.Service
                     RequestUri = new Uri($"https://twelve-data1.p.rapidapi.com/quote?symbol={symbol}&interval=5min&outputsize=30&format=json"),
                     Headers =
     {
-        { "X-RapidAPI-Key", _configuration["BlazorStockVariables:x-rapid-api-key"] },
-        { "X-RapidAPI-Host", _configuration["BlazorStockVariables:x-rapid-api-host"] },
+        //Commented out to use App Service Env Variables instead
+        //{ "X-RapidAPI-Key", _configuration["BlazorStockVariables:x-rapid-api-key"] },
+        //{ "X-RapidAPI-Host", _configuration["BlazorStockVariables:x-rapid-api-host"] },
+        { "X-RapidAPI-Key", System.Configuration.ConfigurationManager.AppSettings["x-rapid-api-key"] },
+        { "X-RapidAPI-Host", System.Configuration.ConfigurationManager.AppSettings["x -rapid-api-host"] },
     },
                 };
                 Debug.WriteLine("Point one reached");
